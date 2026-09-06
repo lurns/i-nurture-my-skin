@@ -1,2 +1,7 @@
 # i-nurture-my-skin
-desktop app to manage and analyze my skincare
+
+manage and analyze my skincare - bye bye google sheets
+
+- svelte w/ sveltekit
+- tailwindcss
+- supabase
