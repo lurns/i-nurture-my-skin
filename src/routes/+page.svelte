@@ -3,6 +3,7 @@
   import SkincareCard from '$lib/components/SkincareCard.svelte';
   import { supabase } from '$lib/supabase'
   import { onMount } from 'svelte'
+	import Nav from '$lib/components/Nav.svelte';
 
   let entries: SkincareEntry[] = $state([])
   let loading = $state(true)
@@ -21,8 +22,7 @@
   })
 </script>
 
-<h1 class="text-5xl text-teal-900 pb-4">Skincare Log</h1>
-
+<Nav />
 {#if loading}
   <strong>loading...</strong>
 {:else}

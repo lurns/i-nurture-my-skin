@@ -1,22 +1,16 @@
 <script lang="ts">
   import type { SkincareEntry } from '$lib/database.types'
   import { formatDate } from '$lib/utils/date'
+  import { calendarIcon, editIcon, deleteIcon } from '$lib/utils/icons';
 
   let { entry }: { entry: SkincareEntry } = $props()
 
   let expanded = $state(false)
 
-  const calendarIcon: string = 'icon-[akar-icons--calendar] size-4 shrink-0';
+  // update styling for icons
+  const scCalendarIcon: string = calendarIcon.concat(' size-4 shrink-0');
 
-  const addIcon: string = 'icon-[akar-icons--circle-plus]';
-  const editIcon: string = 'icon-[akar-icons--edit]';
-  const deleteIcon: string = 'icon-[akar-icons--trash-can]';
-
-  const timeUsedIcons: Record<string, string> = {
-    daytime: 'icon-[akar-icons--sun-fill]',
-    nighttime: 'icon-[akar-icons--moon-fill]'
-  }
-
+  // set colors for cards based on product type
   const typeColors: Record<string, string> = {
     cleanser: '#14b8a6',   // teal-500
     serum: '#84cc16',      // lime-500
@@ -76,7 +70,7 @@
     {/if}
 
     <p class="text-sm/relaxed opacity-60 inline-flex items-center overlay-text gap-1.5">
-      <span class={calendarIcon}></span> {formatDate(entry.start_date)} – {formatDate(entry.end_date)}
+      <span class={scCalendarIcon}></span> {formatDate(entry.start_date)} – {formatDate(entry.end_date)}
     </p>
 
     {#if entry.notes}
