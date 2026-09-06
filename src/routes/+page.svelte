@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { SkincareEntry } from '$lib/database.types';
+  import SkincareCard from '$lib/components/SkincareCard.svelte';
   import { supabase } from '$lib/supabase'
   import { onMount } from 'svelte'
-  import { formatDate } from '$lib/utils/date'
 
   let entries: SkincareEntry[] = $state([])
   let loading = $state(true)
@@ -12,6 +12,7 @@
       .from('skincare')
       .select('*')
       .order('start_date', { ascending: false })
+      .neq('status', 'In Queue')
 
     if (error) console.error(error)
     console.log(data)
@@ -20,26 +21,24 @@
   })
 </script>
 
-<h1>Skincare Log</h1>
+<h1 class="text-5xl text-teal-900 pb-4">Skincare Log</h1>
 
 {#if loading}
-  <p>Loading...</p>
-{:else if entries.length === 0}
-  <p>No entries yet.</p>
+  <strong>loading...</strong>
 {:else}
-  <ul>
+  <div class="columns-1 md:columns-2 gap-3 [&>*]:mb-3 [&>*]:break-inside-avoid">
+  <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-start"> -->
     {#each entries as entry (entry.id)}
-      <li>
-        <strong>{entry.name}</strong> — {entry.status === 'In Queue' ? 'Not started' : formatDate(entry.start_date)}
-        {#if entry.notes}<p>{entry.notes}</p>{/if}
-      </li>
+      <SkincareCard {entry} />
     {/each}
-  </ul>
+  </div>
 {/if}
-
-<strong class="text-3xl underline text-blue-400"></strong>
 
 <style lang="postcss">
   @reference "tailwindcss";
+
+  h1 {
+    font-family: "Bagel Fat One", sans-serif;
+  }
 
 </style>

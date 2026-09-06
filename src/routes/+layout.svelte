@@ -1,14 +1,6 @@
-<!-- <script lang="ts">
+<script lang="ts">
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
-
-	let { children } = $props();
-</script>
-
-<svelte:head><link rel="icon" href={favicon} /></svelte:head>
-{@render children()} -->
-
-<script lang="ts">
   import { supabase } from '$lib/supabase'
 	import type { Session } from '@supabase/supabase-js';
   import { onMount } from 'svelte'
@@ -36,6 +28,8 @@
   }
 </script>
 
+<svelte:head><link rel="icon" href={favicon} /></svelte:head>
+
 {#if loading}
   <p>Loading...</p>
 {:else if !session}
@@ -45,5 +39,7 @@
     <button onclick={login}>Log in</button>
   </div>
 {:else}
-  {@render children()}
+	<div class="m-4">
+  	{@render children()}
+	</div>
 {/if}
