@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { SkincareEntry } from '$lib/database.types'
   import { formatDate } from '$lib/utils/date'
+  import { typeColors } from '$lib/utils/color';
   import { calendarIcon, editIcon, deleteIcon } from '$lib/utils/icons';
 
   let { entry }: { entry: SkincareEntry } = $props()
@@ -10,24 +11,9 @@
   // update styling for icons
   const scCalendarIcon: string = calendarIcon.concat(' size-4 shrink-0');
 
-  // set colors for cards based on product type
-  const typeColors: Record<string, string> = {
-    cleanser: '#14b8a6',   // teal-500
-    serum: '#84cc16',      // lime-500
-    moisturizer: '#8b5cf6',// violet-500
-    sunscreen: '#f59e0b',  // amber-500
-    toner: '#06b6d4',      // cyan-500
-    'eye cream': '#a855f7',// purple-500
-    mask: '#d946ef',       // fuchsia-500
-    essence: '#84cc16',
-    lip: '#f43f5e'         // rose-500
-  }
-
   const setBaseColor = () => {
     if (entry.status === 'Emptied') {
       return '#848484';
-    } else if (entry.status === 'In Queue') {
-      return '#9ca3af';
     } else {
       return entry.type ? (typeColors[entry.type.toLowerCase()] ?? '#9ca3af') : '#9ca3af';
     }
