@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { SkincareEntry } from '$lib/database.types'
+  import { resolve } from '$app/paths';
   import { formatDate } from '$lib/utils/date'
   import { typeColors } from '$lib/utils/color';
   import { calendarIcon, editIcon, deleteIcon } from '$lib/utils/icons';
@@ -65,16 +66,14 @@
   </div>
   <!-- Edit/Delete -->
   <div class="flex flex-row justify-end text-xl pt-4 pb-1 pr-3">
-    <button class="edit-btn cursor-pointer pr-2" aria-label="edit" onclick={() => null}>
+    <a href="{resolve('/edit')}?id={entry.id}" class="edit-btn cursor-pointer pr-2" aria-label="edit">
       <span class={editIcon}></span>
-    </button>
+    </a>
     <button class="delete-btn cursor-pointer" aria-label="delete" onclick={() => null}>
       <span class={deleteIcon}></span>
     </button>
   </div>
 </div>
-
-
 
 <style lang="postcss">
   @reference "tailwindcss";

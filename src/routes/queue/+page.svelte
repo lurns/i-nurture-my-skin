@@ -6,6 +6,7 @@
   import { onMount } from 'svelte'
   import { SvelteMap } from 'svelte/reactivity';
 	import Nav from '$lib/components/Nav.svelte';
+	import { Status } from '$lib/utils/constants';
 
   let entries: SkincareEntry[] = $state([])
   let loading = $state(true)
@@ -18,7 +19,7 @@
       .from('skincare')
       .select('*')
       .order('type')
-      .eq('status', 'In Queue')
+      .eq('status', Status.InQueue)
 
     if (error) console.error(error)
     console.log(data)
@@ -41,9 +42,9 @@
   <strong>loading...</strong>
 {:else}
   <!-- summary of item types and counts -->
-  <div class="flex flex-row flex-wrap pb-3">
+  <div class="flex flex-row flex-wrap pb-3 justify-center">
       {#each [...skincareTypesCount] as [type, count] (type)}
-      {@const accent = typeColors[type.toLowerCase()] ?? '#9ca3af'}
+      {const accent = $derived(typeColors[type.toLowerCase()] ?? '#9ca3af')}
       <span
         class="inline-flex items-center gap-1 px-3 py-1 m-1 rounded-full text-sm font-medium pill-text"
         style="--accent: {accent}"
