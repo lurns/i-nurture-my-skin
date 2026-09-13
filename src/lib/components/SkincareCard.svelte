@@ -8,6 +8,7 @@
   let { entry }: { entry: SkincareEntry } = $props()
 
   let expanded = $state(false)
+  let notesOpen = $state(false)
 
   // update styling for icons
   const scCalendarIcon: string = calendarIcon.concat(' size-4 shrink-0');
@@ -52,15 +53,38 @@
     <p class="text-md opacity-90 overlay-text">
       {entry.brand} <span class="opacity-60">//</span> {entry.type}
     </p>
-    {#if entry.rating}
-      <p class="text-sm overlay-text py-1">Rating: {entry.rating}/5</p>
-    {/if}
+    
+    <!-- Rating -->
+    <p class="text-sm overlay-text py-1">Rating: {entry.rating ? entry.rating + '/5' : 'No rating yet' }</p>
 
+    <!-- Dates -->
     <p class="text-sm/relaxed opacity-60 inline-flex items-center overlay-text gap-1.5">
       <span class={scCalendarIcon}></span> {formatDate(entry.start_date)} – {formatDate(entry.end_date)}
     </p>
 
-    {#if entry.notes}
+    <!-- Notes -->
+    <hr class="my-2 overlay-text opacity-20" />
+    <div class="flex">
+      <h4 class="font-bold overlay-text">Notes</h4>
+      {#if entry.notes}
+        <button 
+        class="text-xs underline overlay-text opacity-60 mt-1 pl-2"
+        aria-label="toggle-notes"
+        onclick={() => (notesOpen = !notesOpen)}> 
+          <svg
+            class="w-4 h-4 transition-transform {notesOpen ? 'rotate-180' : ''}"
+            viewBox="0 0 20 20" fill="currentColor"
+          >
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 
+              11.148l3.71-3.918a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 
+              0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+        
+        </button>
+      {/if}
+    </div>
+    
+    {#if notesOpen}
       <p class="text-sm italic mt-1 overlay-text">{entry.notes}</p>
     {/if}
   </div>
