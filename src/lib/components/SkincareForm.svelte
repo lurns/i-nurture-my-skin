@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { supabase } from '$lib/supabase'
+  // import { supabase } from '$lib/supabase'
+  import { addEntry, updateEntry } from '$lib/state/entries.svelte'
   import { skincareEntrySchema } from '$lib/schemas/skincare'
   import { productTypeOptions, statusOptions } from '$lib/utils/constants';
   import type { SkincareEntry } from '$lib/database.types';
@@ -45,21 +46,15 @@
 
     submitting = true
 
-    const { error } = isEditing
-      ? await supabase.from('skincare').update(result.data).eq('id', entry!.id)
-      : await supabase.from('skincare').insert(result.data)
-
-    submitting = false
-
-    if (error) {
-      errors.form = error.message
-      return
-    }
-
-    if (!isEditing) {
+    if (isEditing) {
+      await updateEntry(entry!.id, result.data)
+    } else {
+      await addEntry(result.data)
       brand = name = type = status = start_date = end_date = notes = ''
       rating = null
     }
+
+    submitting = false
 
     onSuccess()
   }

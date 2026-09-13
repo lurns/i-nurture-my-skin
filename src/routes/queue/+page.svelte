@@ -1,46 +1,38 @@
 <script lang="ts">
+  import { skincareStore } from '$lib/state/entries.svelte'
 	import type { SkincareEntry } from '$lib/database.types';
   import { typeColors } from '$lib/utils/color';
   import SkincareCard from '$lib/components/SkincareCard.svelte';
-  import { supabase } from '$lib/supabase'
-  import { onMount } from 'svelte'
   import { SvelteMap } from 'svelte/reactivity';
 	import Nav from '$lib/components/Nav.svelte';
-	import { Status } from '$lib/utils/constants';
+	import { productTypeOptions, Status } from '$lib/utils/constants';
 
-  let entries: SkincareEntry[] = $state([])
-  let loading = $state(true)
+  const entries = $derived.by(() => {
+    const grouped = skincareStore.entries
+      .filter(e => e.status === Status.InQueue)
+      .reduce((acc, entry) => {
+        acc[entry.type] = acc[entry.type] || []
+        acc[entry.type].push(entry)
+        return acc
+      }, {} as Record<string, SkincareEntry[]>)
 
-  let skincareTypesCount: SvelteMap<string, number> = new SvelteMap(Object.keys(typeColors).map(type => [type, 0]));
+    return Object.values(grouped).flat()
+  })
 
-  
-  onMount(async () => {
-    const { data, error } = await supabase
-      .from('skincare')
-      .select('*')
-      .order('type')
-      .eq('status', Status.InQueue)
-
-    if (error) console.error(error)
-    console.log(data)
-    entries = data ?? []
-    loading = false
-
-    if (data) {
-      for (const entry of data) {
-        if (!entry.type) continue
-        skincareTypesCount.set(entry.type.toLowerCase(), (skincareTypesCount.get(entry.type.toLowerCase()) ?? 0) + 1)
-      }
+  const skincareTypesCount = $derived.by(() => {
+    const counts = new SvelteMap<string, number>(productTypeOptions.map(type => [type, 0]))
+    
+    for (const entry of entries) {
+      if (!entry.type) continue
+      counts.set(entry.type, (counts.get(entry.type) ?? 0) + 1)
     }
-
+    return counts
   })
 </script>
 
 <Nav />
 
-{#if loading}
-  <strong>loading...</strong>
-{:else}
+{#if entries}
   <!-- summary of item types and counts -->
   <div class="flex flex-row flex-wrap pb-3 justify-center">
       {#each [...skincareTypesCount] as [type, count] (type)}
