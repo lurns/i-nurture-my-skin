@@ -1,5 +1,7 @@
 <script lang="ts">
   import type { SkincareEntry } from '$lib/database.types'
+  import ConfirmModal from './ConfirmModal.svelte';
+  import { deleteEntry } from '$lib/state/entries.svelte';
   import { resolve } from '$app/paths';
   import { formatDate } from '$lib/utils/date'
   import { typeColors } from '$lib/utils/color';
@@ -9,6 +11,17 @@
 
   let expanded = $state(false)
   let notesOpen = $state(false)
+
+  let showDeleteConfirm = $state(false)
+
+  const handleDelete = async () => {
+    try {
+      await deleteEntry(entry.id)
+    } catch (e) {
+      console.error(e)
+      alert('Failed to delete entry.')
+    }
+  }
 
   // update styling for icons
   const scCalendarIcon: string = calendarIcon.concat(' size-4 shrink-0');
@@ -83,7 +96,7 @@
         </button>
       {/if}
     </div>
-    
+
     {#if notesOpen}
       <p class="text-sm italic mt-1 overlay-text">{entry.notes}</p>
     {/if}
@@ -93,10 +106,18 @@
     <a href="{resolve('/edit')}?id={entry.id}" class="edit-btn cursor-pointer pr-2" aria-label="edit">
       <span class={editIcon}></span>
     </a>
-    <button class="delete-btn cursor-pointer" aria-label="delete" onclick={() => null}>
+    <button class="delete-btn cursor-pointer" aria-label="delete" onclick={() => (showDeleteConfirm = true)}>
       <span class={deleteIcon}></span>
     </button>
   </div>
+
+  <ConfirmModal
+    bind:open={showDeleteConfirm}
+    type="DELETE"
+    title="Delete product from log?"
+    message={`This will permanently delete "${entry.name ?? entry.brand}".`}
+    onConfirm={handleDelete}
+  />
 </div>
 
 <style lang="postcss">
