@@ -1,11 +1,12 @@
 <script lang="ts">
   import type { SkincareEntry } from '$lib/database.types'
   import ConfirmModal from './ConfirmModal.svelte';
-  import { deleteEntry } from '$lib/state/entries.svelte';
+  import { addEntry, deleteEntry } from '$lib/state/entries.svelte';
   import { resolve } from '$app/paths';
   import { formatDate } from '$lib/utils/date'
   import { typeColors } from '$lib/utils/color';
-  import { calendarIcon, editIcon, deleteIcon } from '$lib/utils/icons';
+  import { calendarIcon, copyIcon, editIcon, deleteIcon } from '$lib/utils/icons';
+	import { Status } from '$lib/utils/constants';
 
   let { entry }: { entry: SkincareEntry } = $props()
 
@@ -13,6 +14,7 @@
   let notesOpen = $state(false)
 
   let showDeleteConfirm = $state(false)
+  let showCopyConfirm = $state(false)
 
   const handleDelete = async () => {
     try {
@@ -20,6 +22,26 @@
     } catch (e) {
       console.error(e)
       alert('Failed to delete entry.')
+    }
+  }
+
+  const handleCopy = async () => {
+    try {
+      const entryCopy: Omit<SkincareEntry, 'id'> = {
+        name: entry.name, 
+        brand: entry.brand, 
+        type: entry.type,
+        status: Status.InQueue,
+        start_date: null,
+        end_date: null,
+        notes: null,
+        rating: null
+      }
+
+      await addEntry(entryCopy)
+    } catch (e) {
+      console.error(e)
+      alert('Failed to copy entry.')
     }
   }
 
@@ -101,8 +123,11 @@
       <p class="text-sm italic mt-1 overlay-text">{entry.notes}</p>
     {/if}
   </div>
-  <!-- Edit/Delete -->
+  <!-- Copy/Edit/Delete -->
   <div class="flex flex-row justify-end text-xl pt-4 pb-1 pr-3">
+    <button class="copy-btn cursor-pointer" aria-label="copy" onclick={() => (showCopyConfirm = true)}>
+      <span class={copyIcon}></span>
+    </button>
     <a href="{resolve('/edit')}?id={entry.id}" class="edit-btn cursor-pointer pr-2" aria-label="edit">
       <span class={editIcon}></span>
     </a>
@@ -117,6 +142,14 @@
     title="Delete product from log?"
     message={`This will permanently delete "${entry.name ?? entry.brand}".`}
     onConfirm={handleDelete}
+  />
+
+  <ConfirmModal
+    bind:open={showCopyConfirm}
+    type="CONFIRM"
+    title="Copy product to queue"
+    message={`This will copy "${entry.name ?? entry.brand}" to the queue.`}
+    onConfirm={handleCopy}
   />
 </div>
 
@@ -149,13 +182,13 @@
     font-size: 0.9rem;
   }
 
-  .edit-btn {
+  .edit-btn, .copy-btn {
     mix-blend-mode: multiply;
     color: color-mix(in srgb, var(--accent) 60%, black);
     transition: color 0.3s ease, opacity 0.3s ease;
   }
 
-  .edit-btn:hover {
+  .edit-btn:hover, .copy-btn:hover {
     mix-blend-mode: screen;
     opacity: 0.6;
     color: white;
