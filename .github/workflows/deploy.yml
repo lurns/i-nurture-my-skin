@@ -41,9 +41,6 @@ jobs:
           echo "${{ secrets.HOST_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
 
-      - name: Verify tailnet connection
-        run: tailscale ping -c 2 ${{ secrets.TS_HOST_IP }}
-
       - name: Sync build to server
         run: |
           rsync -avz --delete \
